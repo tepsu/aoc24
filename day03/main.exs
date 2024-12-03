@@ -14,11 +14,8 @@ defmodule Day03 do
       :timer.tc(fn ->
         File.read!("day03.input")
         |> String.trim()
-        # |> IO.inspect(label: "Trimmed line")
         |> Day03.parse_line()
-        # |> IO.inspect(label: "Parsed line")
         |> Enum.map(&Day03.mul_captures/1)
-        # |> IO.inspect(label: "Multiples")
         |> Enum.sum()
       end)
 
@@ -26,11 +23,26 @@ defmodule Day03 do
     IO.puts("PART ONE: Result: #{result}")
   end
 
+  def process_dos(dos) do
+    dos
+    |> String.split("don't()")
+    |> hd()
+    |> IO.inspect(label: "hd")
+    |> Day03.parse_line()
+    |> IO.inspect(label: "parse line")
+    |> Enum.map(&Day03.mul_captures/1)
+    |> IO.inspect(label: "mul_captures", charlists: :as_lists)
+  end
+
   def run_part2 do
     {time, result} =
       :timer.tc(fn ->
-        File.stream!("day03.sample")
-        |> Stream.map(&Day03.parse_line/1)
+        File.read!("day03.input")
+        |> String.split("do()", trim: true)
+        |> IO.inspect(label: "Split")
+        |> Enum.flat_map(&Day03.process_dos/1)
+        |> IO.inspect(label: "process_dos", charlists: :as_lists)
+        |> Enum.sum()
       end)
 
     IO.puts("PART TWO: Execution time: #{time / 1000} ms")
@@ -39,4 +51,4 @@ defmodule Day03 do
 end
 
 Day03.run_part1()
-# Day03.run_part2()
+Day03.run_part2()
