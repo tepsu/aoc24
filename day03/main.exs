@@ -1,5 +1,3 @@
-# IEx.configure(inspect: [charlists: :as_lists])
-
 defmodule Day03 do
   def parse_line(line) do
     Regex.scan(~r/mul\((\d{1,3}),(\d{1,3})\)/, line)
