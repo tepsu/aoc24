@@ -66,8 +66,39 @@ defmodule Day05 do
   def run_part2 do
     {time, result} =
       :timer.tc(fn ->
-        File.read!("day05.sample")
-        |> String.split("\n\n", trim: true)
+        [rules_arr, lists] =
+          File.read!("day05.input")
+          |> String.split("\n\n", trim: true)
+          |> Enum.map(&String.split/1)
+
+        rules_map =
+          rules_arr
+          |> Enum.reduce(%{}, fn string, acc ->
+            [value, key] = String.split(string, "|")
+            Map.put(acc, key, [value | acc[key] || []])
+          end)
+
+        lists
+        |> Enum.map(fn string ->
+          string
+          |> String.split(",")
+        end)
+        |> Enum.filter(fn list ->
+          # filter the list so we have bad lists only
+          !check_list(list, rules_map)
+        end)
+        |> Enum.map(fn bad_list ->
+          bad_list
+          |> Enum.sort(fn a, b ->
+            # sort the bad list using a custom sort function
+            # if there's no rule, means we're the first element
+            # if b is in rule, means we a comes before b
+            rule = rules_map[a]
+            rule == nil or not Enum.member?(rule, b)
+          end)
+        end)
+        |> Enum.map(&at_middle/1)
+        |> Enum.sum()
       end)
 
     IO.puts("PART TWO: Execution time: #{time / 1000} ms")
@@ -76,4 +107,4 @@ defmodule Day05 do
 end
 
 Day05.run_part1()
-# Day05.run_part2()
+Day05.run_part2()
